@@ -7,6 +7,16 @@ Experimenting with ESP8266 and node-mcu for lower power usage than a full Omega2
 
 First get an ESP8266. The easiest is to get one of the actual nodemcu devices with a built-in USB interface. Flash the ESP8266 with a nodemcu firmware using e.g. [nodemcu-pyflasher](https://github.com/marcelstoer/nodemcu-pyflasher). For convenience a compiled firmware that works with this repository's code is included in the `firmware/` directory.
 
+The firmware needs the following modules:
+
+* file
+* net
+* node
+* WiFi
+* UART
+* websocket
+* CJSON
+
 ## Dependencies
 
 Install nodemcu-uploader:
