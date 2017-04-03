@@ -1,4 +1,5 @@
 
+-- based on https://github.com/reischle/CaptiveIntraweb/blob/dev/dns-liar.lua
 
 dns_ip=wifi.ap.getip()
 
