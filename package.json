@@ -1,7 +1,7 @@
 {
   "name": "disaster-radio-nodemcu",
   "version": "0.0.1",
-  "description": "A simple mesh map and status monitor",
+  "description": "Attempt at using an ESP8266 as a Disaster Radio wifi gateway",
   "homepage": "http://github.com/sudomesh/disaster-radio-nodemcu",
   "scripts": {
     "build": "browserify -e js/index.js -m -o bundle.js"
