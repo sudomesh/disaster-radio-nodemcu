@@ -20,4 +20,4 @@ if [ ! -f "bundle.js" ]; then
   exit 1
 fi
 
-nodemcu-uploader --port $DEVICE --baud $BAUD upload init.lua *.html *.css bundle.js
+nodemcu-uploader --port $DEVICE --baud $BAUD upload *.lua *.html *.css bundle.js
