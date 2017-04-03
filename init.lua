@@ -32,6 +32,7 @@ dhcp_config = {
 wifi.ap.dhcp.config(dhcp_config)
 wifi.ap.dhcp.start()
 
+-- web server
 srv=net.createServer(net.TCP)
 srv:listen(80, function(conn)
   conn:on("receive", function(conn, payload)
