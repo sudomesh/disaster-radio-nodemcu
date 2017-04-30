@@ -40,3 +40,6 @@ dofile("webserver.lua")
 
 -- start fake DNS server
 dofile("dnsserver.lua")
+
+-- start telnet terminal
+dofile("terminal.lua")

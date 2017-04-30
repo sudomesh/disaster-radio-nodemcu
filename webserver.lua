@@ -1,39 +1,4 @@
 
-function sendFileOld(conn, filename)
-  local f
-
-  if filename ~= nil then
-    f = file.open(filename, "r")
-  else
-    f = nil
-  end
-
-  if f == nil then
-    f = file.open("404.html", "r")
-  end  
-
-  local buf = ""
-  local line
-  repeat
-    line = f:read()
-    if line then
-      buf = buf..line
-    end
-  until line == nil
-
-  conn:send(buf, function(sent) 
-    f:close()
-    conn:close()
-    f = nil
-  end)
-end
-
-function sendLines(conn, f)
-
-
-
-end
-
 function sendFile(conn, filename)
   local f
   local buf

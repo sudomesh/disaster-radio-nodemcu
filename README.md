@@ -93,6 +93,24 @@ The ESP32 has the same maximum transmit power as the ESP8266 (19.5 dBm, 802.11b 
 
 Conclusion: When an ESP32 with u.fl plug becomes available _and_ NodeMCU is ready we should compare wifi performance to the ESP8266 and consider swithing if it's significantly better.
 
+# debugging
+
+The ESP8266 only has one serial port and we're using it to talk to the RN2903. Currently there are two ways to get a lua console:
+
+Direct TCP socket on port 23:
+
+```
+nc 100.127.0.1 23
+
+or
+
+telnet -E 100.127.0.1 23
+```
+
+Web via http://100.127.0.1/serial but currently the web terminal is rather heavy (150kB) and it takes a suprisingly long time for the ESP8266 to send the js file.
+
+Both of these are not the same as the serial terminal. Notably they lack multiline input support. 
+
 # RN2903 serial
 
 Since we're already using serial to upload to the ESP8266 we are switching the serial port to use GPIO13 for RX and GPIO15 for TX five seconds after boot. This gives a window for talking to the device after reset and then switches it from communicating with your computer for development, over to communicating with the RN2903.
@@ -106,8 +124,10 @@ GPIO15: D8
 
 # ToDo
 
+* Switch to more minimal web terminal (maybe just a styled textarea)
+* Actually talk to RN2903
 * Have a little HTTP POST endpoint that switches serial betwen RN2903 and normal
-* Fix dev console whitespace issues
+* Fix web console whitespace issues
 * Catch XML parsing error on XMLHTTPRequest (firefox)
 * Security for dev console
 
