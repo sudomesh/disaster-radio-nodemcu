@@ -1,0 +1,10 @@
+
+body {
+  font-family: sans-serif;
+}
+
+
+#terminal-container {
+    width: 800px;
+    height: 450px;
+}

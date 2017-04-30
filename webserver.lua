@@ -1,5 +1,5 @@
 
-function sendFile(conn, filename)
+function sendFileOld(conn, filename)
   local f
 
   if filename ~= nil then
@@ -12,7 +12,7 @@ function sendFile(conn, filename)
     f = file.open("404.html", "r")
   end  
 
-  buf = ""
+  local buf = ""
   local line
   repeat
     line = f:read()
@@ -27,6 +27,47 @@ function sendFile(conn, filename)
     f = nil
   end)
 end
+
+function sendLines(conn, f)
+
+
+
+end
+
+function sendFile(conn, filename)
+  local f
+  local buf
+
+  if filename ~= nil then
+    f = file.open(filename, "r")
+  else
+    f = nil
+  end
+
+  if f == nil then
+    f = file.open("404.html", "r")
+  end
+
+  if f == nil then
+    print("FAIL")
+  end  
+
+  local function sender()
+
+    buf = f:read(1024)
+    if buf then
+      conn:send(buf)
+    else
+      conn:close()
+      f:close()
+    end
+  end
+
+  conn:on("sent", sender)
+
+  sender()
+end
+
 
 function sendString(conn, str)
   conn:send(str, function(sent)

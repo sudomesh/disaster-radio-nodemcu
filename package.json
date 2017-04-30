@@ -19,11 +19,10 @@
     "low power",
     "wifi"
   ],
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "devDependencies": {
-    "browserify": "^14.1.0"
+    "browserify": "^14.1.0",
+    "xterm": "^2.5.0"
   },
   "author": {
     "name": "Marc Juul",
