@@ -17,18 +17,40 @@ function pageInit() {
 
       term.open(te);
 
-      var promptLine = "$ ";
+      var promptLine = '';
 
       term.prompt = function () {
         term.write('\r\n' + promptLine);
       };
 
+      
+      var commandInProgress = false;
+
+      function runCommand(cmd, cb) {
+
+        var xhr = new XMLHttpRequest();
+        
+        xhr.open('POST', '/serial');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+          var commandInProgress = false;
+          if(xhr.status !== 200) {
+            return cb("POST failed: " + xhr.status);
+          }
+          console.log("GOT:", xhr.responseText);
+          cb(null, xhr.responseText);
+        };
+
+// TODO
+// we should URI decode but the nodemcu webserver doesn't care
+// and can't uridecode anyway
+//        var toSend = encodeURI('cmd=' + cmd)
+        var toSend = 'cmd=' + cmd;
+        console.log("SENDING:", toSend)
+        xhr.send(toSend);
+      }
 
       var cmd = '';
-
-      function runCommand(cmd) {
-        console.log(cmd);
-      }
 
       term.on('key', function(key, ev) {
         // TODO this is a terrible test for whether something is printable
@@ -37,9 +59,19 @@ function pageInit() {
         );
         
         if(ev.keyCode == 13) {
-          runCommand(cmd);
-          term.prompt();
+          if(commandInProgress) return;
+          if(!cmd.length) cmd = "\n";
+          var commandInProgress = true;
+          runCommand(cmd, function(err, res) {
+            var commandInProgress = false;
+            if(err) return console.error(err);
+            
+            term.write(res);
+          });
+
           cmd = '';
+          term.prompt();
+
         } else if(ev.keyCode == 8) {
           // Do not delete the prompt
           if(term.x > promptLine.length) {

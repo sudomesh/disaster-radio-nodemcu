@@ -37,6 +37,7 @@ end
 function sendFile(conn, filename)
   local f
   local buf
+  local head = "HTTP/1.1 200 OK\r\n"
 
   if filename ~= nil then
     f = file.open(filename, "r")
@@ -46,11 +47,11 @@ function sendFile(conn, filename)
 
   if f == nil then
     f = file.open("404.html", "r")
+    head = "HTTP/1.1 404 Not Found\r\n"
   end
 
-  if f == nil then
-    print("FAIL")
-  end  
+--  head = head.."Content-Type: text/html\r\n\r\n"
+  head = head.."\r\n\r\n"
 
   local function sender()
 
@@ -64,12 +65,14 @@ function sendFile(conn, filename)
   end
 
   conn:on("sent", sender)
+  conn:send(head)
 
-  sender()
 end
 
 
 function sendString(conn, str)
+  str = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n"..str
+
   conn:send(str, function(sent)
     conn:close()
   end)
@@ -77,6 +80,9 @@ end
 
 srv=net.createServer(net.TCP)
 srv:listen(80, function(conn)
+  conn:on("disconnection", function(conn)
+    node.output()
+  end)
   conn:on("receive", function(conn, payload)
     local buf
     local reqfile
@@ -116,9 +122,20 @@ srv:listen(80, function(conn)
 
         local cmd = string.sub(body, cmdStart, string.len(body))
 
-        conn:send(cmd, function(sent) 
+        if not cmd or string.len(cmd) < 1 then
           conn:close()
-        end)
+        end
+
+        -- redirect lua interpreter output
+        node.output(function(str)
+          conn:send(str, function(sent)
+            node.output(nil)
+            conn:close()
+          end)
+        end, 1)
+ 
+        -- submit command to lua interpreter
+        node.input(cmd)
 
       else
         sendFile(conn, nil) -- send 404

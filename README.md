@@ -104,6 +104,24 @@ GPIO13: D7
 GPIO15: D8
 ```
 
+# ToDo
+
+* Have a little HTTP POST endpoint that switches serial betwen RN2903 and normal
+* Fix dev console whitespace issues
+* Catch XML parsing error on XMLHTTPRequest (firefox)
+* Security for dev console
+
+function to switch serial:
+
+```
+uart.alt(1) -- switch to alternate serial pins (where RN2903 is connected)
+uart.setup(0, 115200, 8, uart.PARITY_NONE, uart.STOPBITS_1, 0)
+-- redirect serial input to this callback
+uart.on("data", "\n", function(data)
+  -- handle incoming data from RN2903
+end), 0)
+uart.write(0, "HELLO!")
+```
 
 
 # License and copyright
