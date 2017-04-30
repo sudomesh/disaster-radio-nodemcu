@@ -75,13 +75,6 @@ minicom -o -D /dev/ttyUSB0
 
 The latest version of the NodeMCU firmware sends the DNS server DHCP option correctly as the board's own IP. If this ever changes, then we can re-enable it by adding "#define USE_DNS 1" in "app/include/lwip/app/dhcpserver.h".
 
-# ToDo
-
-* Add communication with RN2903 via UART NodeMCU module
-* Add CSS and JS inlining so initial load is only one file
-* DNS server seems slow to respond to first request?
-* Make DNS server only respond to requests for a specified hostname
-* Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
 
 # ESP32
 
@@ -124,29 +117,20 @@ GPIO15: D8
 
 # ToDo
 
-* Switch to more minimal web terminal (maybe just a styled textarea)
-* Actually talk to RN2903
+* Get communication with RN2903 working
 * Have a little HTTP POST endpoint that switches serial betwen RN2903 and normal
+* Switch to more minimal web terminal (maybe just a styled textarea)
 * Fix web console whitespace issues
 * Catch XML parsing error on XMLHTTPRequest (firefox)
 * Security for dev console
-
-function to switch serial:
-
-```
-uart.alt(1) -- switch to alternate serial pins (where RN2903 is connected)
-uart.setup(0, 115200, 8, uart.PARITY_NONE, uart.STOPBITS_1, 0)
--- redirect serial input to this callback
-uart.on("data", "\n", function(data)
-  -- handle incoming data from RN2903
-end), 0)
-uart.write(0, "HELLO!")
-```
-
+* Add CSS and JS inlining so initial load is only one file
+* DNS server seems slow to respond to first request?
+* Make DNS server only respond to requests for a specified hostname
+* Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
 
 # License and copyright
 
-License and copyright information for files in the `firmware/` directory can be found at 
+License and copyright information for files in the `firmware/` directory can be found at the NodeMCU website.
 
 For all other files in this repository:
 
