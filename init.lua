@@ -1,7 +1,10 @@
 
--- wifi.setmode(wifi.STATIONAP)
+
+-- highest transmit power only available in 802.11b mode
+wifi.setphymode(wifi.PHYMODE_B)
+
 -- use only AP for now since STATIONAP wasn't working
--- wifi.setmode(wifi.SOFTAP)
+wifi.setmode(wifi.SOFTAP)
 ap_cfg = {
   ssid = "peoples-disaster-radio",
   channel = 1,
