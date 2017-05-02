@@ -41,5 +41,8 @@ dofile("webserver.lua")
 -- start fake DNS server
 dofile("dnsserver.lua")
 
+-- serial port stuff
+dofile("serial.lua")
+
 -- start telnet terminal
 dofile("terminal.lua")

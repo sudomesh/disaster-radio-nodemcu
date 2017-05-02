@@ -7,13 +7,12 @@ srv:listen(23, function(conn)
   local ret
   local out
   local cmd = ""
-  
-  conn:send("\n~ DisasterRadio debug console ~\n\n> ")
 
-  -- redirect lua interpreter output
---  node.output(function(str)
---    conn:send(str)
---  end, 1)
+  switchSerial(function(data)
+    conn:send("[serial-receive] "..data.."\n")
+  end)
+
+  conn:send("\n~ DisasterRadio debug console ~\n\n> ")
 
   conn:on("disconnection", function(conn)
 --    node.output()
@@ -27,6 +26,12 @@ srv:listen(23, function(conn)
     ret = string.find(payload, "\n")
     if ret ~= nil then
       cmd = cmd..string.sub(payload, 1, ret-1)
+
+      -- the telnet protocol sends two-byte control sequences
+      -- where the first byte is always 0xff
+      -- so remove all two-byte sequeces starting with 0xff
+      -- TODO support 247 "erase character" and 248 "erase line"
+      cmd = cmd:gsub(string.char(0xff)..'.', '')
 
       out = run(cmd)
       conn:send(out.."\n> ")

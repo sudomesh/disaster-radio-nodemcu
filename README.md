@@ -93,37 +93,39 @@ The ESP8266 only has one serial port and we're using it to talk to the RN2903. C
 Direct TCP socket on port 23:
 
 ```
-nc 100.127.0.1 23
-
-or
-
-telnet -E 100.127.0.1 23
+telnet 100.127.0.1 23
 ```
 
-Web via http://100.127.0.1/serial but currently the web terminal is rather heavy (150kB) and it takes a suprisingly long time for the ESP8266 to send the js file.
+or:
 
-Both of these are not the same as the serial terminal. Notably they lack multiline input support. 
+```
+nc 100.127.0.1 23
+```
+
+Web via http://100.127.0.1/serial but currently the web terminal is rather heavy (150kB) and it takes a suprisingly long time for the ESP8266 to send the js file (maybe 15 seconds).
+
+Both of these are not the same as the serial terminal. Notably they currently lack multiline input support ([see this issue](https://github.com/sudomesh/disaster-radio-nodemcu/issues/1)).
 
 # RN2903 serial
 
-Since we're already using serial to upload to the ESP8266 we are switching the serial port to use GPIO13 for RX and GPIO15 for TX five seconds after boot. This gives a window for talking to the device after reset and then switches it from communicating with your computer for development, over to communicating with the RN2903.
+Since we're already using the one and only ESP8266 serial port for the lua developer console, we need to disable the lua console and connect the serial port to the RN2903 instead. Luckily the ESP8266 supports switching the serial TX/RX to use alternate pins after bootup.
 
-nodemcu dev board GPIO mapping:
+These are the alternate serial pins that are connected to the RN2903:
 
 ```
 GPIO13: D7
 GPIO15: D8
 ```
 
+When connecting via network terminal the serial port will be automatically switch to the alternate pins and the lua debug console will be disabled.
+
 # ToDo
 
 * Get communication with RN2903 working
-* Have a little HTTP POST endpoint that switches serial betwen RN2903 and normal
 * Switch to more minimal web terminal (maybe just a styled textarea)
 * Fix web console whitespace issues
 * Catch XML parsing error on XMLHTTPRequest (firefox)
-* Security for dev console
-* Add CSS and JS inlining so initial load is only one file
+* Security for dev console?
 * DNS server seems slow to respond to first request?
 * Make DNS server only respond to requests for a specified hostname
 * Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
