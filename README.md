@@ -93,14 +93,10 @@ The ESP8266 only has one serial port and we're using it to talk to the RN2903. C
 Direct TCP socket on port 23:
 
 ```
-telnet 100.127.0.1 23
-```
-
-or:
-
-```
 nc 100.127.0.1 23
 ```
+
+You could also use telnet, but telnet sends a bunch of junk when it connects that the server doesn't know how to filter out yet, so you need to hit enter once immediately after connecting to discard the junk (you'll get a lua error when you do, but that's fine).
 
 Web via http://100.127.0.1/serial but currently the web terminal is rather heavy (150kB) and it takes a suprisingly long time for the ESP8266 to send the js file (maybe 15 seconds).
 
@@ -121,7 +117,8 @@ When connecting via network terminal the serial port will be automatically switc
 
 # ToDo
 
-* Get communication with RN2903 working
+* Make loraCmd time out and call the callback with nil
+* Enabling the DNS server makes uart.write flaky (only some characters sent)
 * Switch to more minimal web terminal (maybe just a styled textarea)
 * Fix web console whitespace issues
 * Catch XML parsing error on XMLHTTPRequest (firefox)
@@ -129,6 +126,24 @@ When connecting via network terminal the serial port will be automatically switc
 * DNS server seems slow to respond to first request?
 * Make DNS server only respond to requests for a specified hostname
 * Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
+
+# Directly talking to the RN2903
+
+If you hook up the RN2903 directly to you usb to serial 3.3v adapter then be aware that you need to terminate each command with ctrl-m ctrl-enter (at least in minicom).
+
+# Talking to the RN2903
+
+The 3.3v on the ESP8266 dev boards are not able to power the RN2903. It needs power from e.g. a dedicated 3.3v regulator.
+
+It seems that the RN2903 becomes uncommunicative if it's connected to the ESP8266 serial while the ESP8266 reboots. I wonder if it might be the RN2903 baud-rate auto-detection that changes the baudrate to 115200. The solution for now is to disconnect and reconnect BOTH the Gnd and 3V3 connections on the RN2903. It also works to momentarily connect the 3.3v RN2903 input to ground, so we should just have a small mosfet that can be controlled with a GPIO to toggle RN2903 power.
+
+After booting the ESP8266, power-cycle the RN2903 as explained above, then connect to the network console and run;
+
+```
+loraInit()
+```
+
+If the RN2903 is responding you will see the message "RN2903 chip is connected". If it is not responding then currently you will get no output.
 
 # License and copyright
 

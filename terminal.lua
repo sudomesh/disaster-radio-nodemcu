@@ -1,6 +1,14 @@
 
 dofile("interpret.lua")
 
+debugSocket = nil
+
+function sdebug(data)
+  if debugSocket then
+    debugSocket:send("[serial-receive] "..data.."\n")
+  end
+end
+
 srv=net.createServer(net.TCP)
 srv:listen(23, function(conn)
 
@@ -8,13 +16,17 @@ srv:listen(23, function(conn)
   local out
   local cmd = ""
 
-  switchSerial(function(data)
-    conn:send("[serial-receive] "..data.."\n")
-  end)
+  debugSocket = conn
+  switchSerial(nil)
+
+--  switchSerial(function(data)
+--    conn:send("[serial-receive] "..data.."\n")
+--  end)
 
   conn:send("\n~ DisasterRadio debug console ~\n\n> ")
 
   conn:on("disconnection", function(conn)
+    debugSocket = nil
 --    node.output()
   end)
 
