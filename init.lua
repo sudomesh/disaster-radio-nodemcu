@@ -52,5 +52,8 @@ dofile("terminal.lua")
 -- LoRa RN2903 communications
 dofile("rn2903.lua")
 
+-- async function calling
+dofile("async.lua")
+
 -- LoRa RN2903 setup functions
 dofile("rn2903_setup.lua")
