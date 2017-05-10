@@ -10,9 +10,9 @@ ap_cfg = {
   channel = 1,
   beacon = 1000
 }
+wifi.ap.config(ap_cfg)
 
 --[[
-wifi.ap.config(ap_cfg)
 sta_cfg = {
   ssid = "peoplesopen.net",
   auto = true
@@ -51,3 +51,6 @@ dofile("terminal.lua")
 
 -- LoRa RN2903 communications
 dofile("rn2903.lua")
+
+-- LoRa RN2903 setup functions
+dofile("rn2903_setup.lua")

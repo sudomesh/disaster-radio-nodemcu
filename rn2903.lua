@@ -17,7 +17,9 @@ function loraCmd(cmd, cb, expectLines)
   uart.write(0, cmd.."\r\n")
 
   uart.on("data", "\n", function(data)
-    uart.on("data", "\n", nil, 0)
+    if (lineCount + 1) >= expectLines then
+      uart.on("data", "\n", nil, 0)
+    end
 
     -- strip trailing \r\n
     data = string.sub(data, 1, -3)
@@ -26,18 +28,18 @@ function loraCmd(cmd, cb, expectLines)
 
     if cb then
       if expectLines <= 1 then
-        return cb()
+        return cb(data)
       end
       lines[lineCount] = data
 
       if lineCount == 1 and data ~= "ok" then
-        return cb(lines)
+        return cb(data)
       end      
 
       lineCount = lineCount + 1
 
       if lineCount >= expectLines then
-        return cb(lines)
+        return cb(data)
       end
     end
   end, 0)
@@ -63,64 +65,6 @@ function loraCheckConnection(cb)
   end)
 end
 
--- configure RN2903 to begin communication
-function loraSetup(cb)
-  -- disable layer 2
-  loraCmd("mac pause", function(maxPauseTime)
-    -- set LoRa modulation mode
-    loraCmd("radio set mod lora", function(resp)
-      if resp ~= "ok" then
-        return cb("Could not switch radio into LoRa modulation mode: "..resp)
-      end)
-      -- set frequency
-      loraCmd("radio set freq 902000000", function(resp)
-        if resp ~= "ok" then
-          return cb("Could not set radio frequency: "..resp)
-        end)
-        -- setting power to 20 equates to setting 18.5 dBm output power
-        -- See page 7 http://ww1.microchip.com/downloads/en/DeviceDoc/50002390B.pdf
-        loraCmd("radio set pwr 20", function(resp)
-          if resp ~= "ok" then
-            return cb("Could not set radio output power: "..resp)
-          end)
-          -- set largest spreading factor (slowest, longest range)
-          loraCmd("radio set sf sf12", function(resp)
-            if resp ~= "ok" then
-              return cb("Could not set LoRa spreading factor: "..resp)
-            end)
-            -- disable CRC header
-            loraCmd("radio set crc off", function(resp)
-              if resp ~= "ok" then
-                return cb("Could not disable radio CRC header: "..resp)
-              end)
-              -- set the coding rate to 4/8
-              -- it is the ratio between actual data and error correction data
-              -- the ratio is <bits-of-actual-data>/<total-bits-sent>
-              loraCmd("radio set cr 4/8", function(resp)
-                if resp ~= "ok" then
-                  return cb("Could not set radio coding rate: "..resp)
-                end)
-              end)
-              -- set the Sync word to 0x42
-              loraCmd("radio set sync 42", function(resp)
-                if resp ~= "ok" then
-                  return cb("Could not set sync word: "..resp)
-                end)
-                -- set bandwidth to 500 kHz (maximum
-                loraCmd("radio set bw 500", function(resp)
-                  if resp ~= "ok" then
-                    return cb("Could not set radio bandwidth: "..resp)
-                  end) 
-                  cb(null)
-                end)
-              end)
-            end)
-          end)
-        end)
-      end)
-    end)
-  end)
-end
 
 -- Expects a hex string
 -- e.g. "baz" consists of 0x62, 0x61 and 0x7a
@@ -141,6 +85,9 @@ function loraTransmit(data, cb)
   end) 
 end
 
+-- calls back with cb(err, [data])
+-- where data is a string of two-characte per byte hex numbers
+-- same as described for loraTransmit
 function loraReceive(rxWindowSize, cb)
   loraCmd("radio rx "..rxWindowSize, function(resp)
     if table.getn(resp) < 2 then
