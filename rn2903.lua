@@ -165,6 +165,14 @@ function loraTransceiveLoop(interval)
   end)
 end
 
+function loraQueueTransmission(data)
+  if loraTransmitQueue then
+    return false
+  end
+  loraTransmitQueue = data
+  return true
+end
+
 function handleReceived(data)
   -- TODO actually handle incoming data
 end

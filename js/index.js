@@ -30,7 +30,7 @@ function pageInit() {
 
         var xhr = new XMLHttpRequest();
         
-        xhr.open('POST', '/serial');
+        xhr.open('POST', '/console');
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onload = function() {
           var commandInProgress = false;
@@ -44,8 +44,8 @@ function pageInit() {
 // TODO
 // we should URI decode but the nodemcu webserver doesn't care
 // and can't uridecode anyway
-//        var toSend = encodeURI('cmd=' + cmd)
-        var toSend = 'cmd=' + cmd;
+//        var toSend = encodeURI('arg=' + cmd)
+        var toSend = 'arg=' + cmd;
         console.log("SENDING:", toSend)
         xhr.send(toSend);
       }
