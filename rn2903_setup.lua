@@ -13,7 +13,8 @@ function loraSetup(cb)
     loraSetCRC,
     loraSetCodingRate,
     loraSetSyncWord,
-    loraSetBandwidth
+    loraSetBandwidth,
+    loraDisableWatchdog
   }, cb)
 end
 
@@ -104,6 +105,17 @@ end
 -- set bandwidth to 500 kHz (maximum)
 function loraSetBandwidth(cb)
   loraCmd("radio set bw 500", function(resp)
+    if resp ~= "ok" then
+      return cb("Could not set radio bandwidth: "..resp)
+    end
+    cb(nil)
+  end)
+end
+
+-- TODO we probably actually want the watchdog
+-- but right now we're not dealing with it
+function loraDisableWatchdog(cb)
+  loraCmd("radio set wdt 0", function(resp)
     if resp ~= "ok" then
       return cb("Could not set radio bandwidth: "..resp)
     end

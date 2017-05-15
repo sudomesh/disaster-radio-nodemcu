@@ -17,7 +17,7 @@ function loraCmd(cmd, cb, expectLines)
   uart.write(0, cmd.."\r\n")
 
   uart.on("data", "\n", function(data)
-    if (lineCount + 1) >= expectLines then
+    if (expectLines > 0) and (lineCount >= expectLines) then
       uart.on("data", "\n", nil, 0)
     end
 
@@ -75,14 +75,11 @@ function loraTransmit(data, cb)
     return cb("data must be a string of 1 to 255 two-character hex values")
   end
   loraCmd("radio tx "..data, function(resp)
-    if table.getn(resp) < 2 then
-      return cb("Radio transmit failed: "..resp[1])
+    if resp ~= "radio_tx_ok" then
+      return cb("Radio transmit failed: "..resp)
     end
-    if resp[2] ~= "radio_tx_ok" then
-      return cb("Radio transmit failed: "..resp[2])
-    end
-    cb(nil)
-  end) 
+    cb()
+  end, 2) 
 end
 
 -- calls back with cb(err, [data])
@@ -90,13 +87,11 @@ end
 -- same as described for loraTransmit
 function loraReceive(rxWindowSize, cb)
   loraCmd("radio rx "..rxWindowSize, function(resp)
-    if table.getn(resp) < 2 then
-      return cb("Radio receive failed: "..resp[1])
+    if string.sub(resp, 1, 8) ~= "radio_rx" then
+      return cb("Radio receive failed: "..resp)
     end
-    if string.sub(resp[2], 1, 8) ~= "radio_rx" then
-      return cb("Radio receive failed: "..resp[2])
-    end
-    cb(nil, string.sub(resp[2], 8))
-  end) 
+    cb(nil, string.sub(resp, 8))
+  end, 2) 
 end
+
 
