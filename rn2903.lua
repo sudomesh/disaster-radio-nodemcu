@@ -45,11 +45,29 @@ function loraCmd(cmd, cb, expectLines)
   end, 0)
 end
 
+-- like loraCmd but times out after 200 ms if no response
+-- if no response is received from lora chip
+function loraCmdT(cmd, cb, expectLines)
+  local t = tmr.create()
+  local timedOut = false
+  t:alarm(200, function()
+    timedOut = true
+    cb("error: no response from lora chip")
+  end)
+  loraCmd(cmd, function(data)
+    if timedOut then
+      return nil
+    end
+    t:unregister()
+    cb(data)
+  end), expectLines)
+end
+
 
 -- check if we can talk to RN2903 LoRa device
 -- via serial
 function loraCheckConnection(cb)
-  loraCmd("sys get ver", function(data)
+  loraCmdT("sys get ver", function(data)
     if string.sub(data, 1, 6) == "RN2903" then
       sdebug("RN2903 chip is connected")
       loraConnected = true
@@ -95,3 +113,58 @@ function loraReceive(rxWindowSize, cb)
 end
 
 
+function loraInit()
+  loraCheckConnection(function(success)
+    if not success then
+      local t = tmr.create()
+      t:alarm(200, function()
+        loraInit() -- retry
+      end)
+      return
+    end
+
+    loraSetup(function(err)
+      if err then
+        local t = tmr.create()
+        t:alarm(1000, function()
+          loraInit() -- retry
+        end)
+        return        
+      end
+
+      loraTransceiveLoop()
+    end)
+  end)
+
+end
+
+
+-- TODO turn this into an actual queue
+loraTransmitQueue = nil
+
+-- interval is specified in "receive windows size" not ms
+-- see RN2903 protocol datasheet for "radio rx"
+function loraTransceiveLoop(interval)
+  interval = interval or 500
+
+  loraReceive(interval, function(err, data)
+    if not err then
+      handleReceived(data)
+    end
+    -- if there is something to transmit, then transmit it
+    if loraTransmitQueue then
+      loraTransmit(loraTransmitQueue, function(err)
+        if not err then
+          loraTransmitQueue = nil
+        end
+        loraTransceiveLoop(interval) 
+      end)
+    else
+      loraTransceiveLoop(interval)
+    end
+  end)
+end
+
+function handleReceived(data)
+  -- TODO actually handle incoming data
+end
