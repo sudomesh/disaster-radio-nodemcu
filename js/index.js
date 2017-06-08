@@ -1,7 +1,28 @@
 
-console.log("testing");
+var entities = new (require('html-entities').AllHtmlEntities);
 
-function pageInit() {
+var myName = "juul";
+
+function initChat() {
+  var form = document.getElementById('chatForm');
+  var view = document.getElementById('chat');
+  var input = document.getElementById('chatInput');
+
+  form.onsubmit = function(e) {
+    e.stopPropagation();
+
+    var span = document.createElement('DIV');
+    span.innerHTML = entities.encode('<'+myName+'> '+input.value);
+    span.className = 'unsent';
+    view.appendChild(span);
+    input.value = '';
+
+    return false;
+  };
+}
+
+
+function initDevConsole() {
   try {
 
     var te = document.getElementById('terminal-container');
@@ -93,6 +114,15 @@ function pageInit() {
     // as a developer dependency
   }
 
+}
+
+
+
+function pageInit() {
+
+  initChat();
+
+  initDevConsole();
 }
 
 document.addEventListener("DOMContentLoaded", pageInit);

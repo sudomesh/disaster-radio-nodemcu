@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>people's disaster radio</title>
+    <title>DisasterRadio</title>
     <meta charset="utf-8">
     <link href="css/main.css" rel="stylesheet" type="text/css" />
     <script src="bundle.js"></script>
   </head>
   <body>
-    <h1>Welcome to people's disaster radio!</h1>
+    <h1>DisasterRadio</h1>
 
-    <p>
-      Under construction.
-    </p>
-
-    <form action="/serial" method="POST">
-      command: <input type="text" name="cmd" />
+    <form id="chatForm" action="/chat" method="POST">
+      <div id="chat">
+        <span>&lt;juul&gt; Testing</span>
+      </div>
+      <input id="chatInput" type="text" name="msg" />
+      <script>
+        var c = document.getElementById('chatInput')
+        c.focus();
+        c.value = ''
+        c = null;
+      </script>
     </form>
 
   </body>

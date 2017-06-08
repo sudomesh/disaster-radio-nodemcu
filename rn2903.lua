@@ -45,7 +45,7 @@ function loraCmd(cmd, cb, expectLines)
   end, 0)
 end
 
--- like loraCmd but times out after 200 ms if no response
+-- like loraCmd but times out after 200 ms
 -- if no response is received from lora chip
 function loraCmdT(cmd, cb, expectLines)
   local t = tmr.create()

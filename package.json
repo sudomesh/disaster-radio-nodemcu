@@ -19,7 +19,9 @@
     "low power",
     "wifi"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "html-entities": "^1.2.1"
+  },
   "devDependencies": {
     "browserify": "^14.1.0",
     "xterm": "^2.5.0"

@@ -3,6 +3,35 @@ body {
   font-family: sans-serif;
 }
 
+#chat {
+    display: block;
+    width: 630px;
+    height: 470px;
+    background-color: black;
+    color: #0fba00;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#chat .unsent {
+    color: #066600;
+}
+
+#chatInput {
+    width: 618px;
+    padding: 5px;
+    display: block;
+    color: #0fba00;
+    font-family: monospace;
+    font-size: 14px;
+    background-color: black;
+    border: 0;
+}
+
+
 
 #terminal-container {
     width: 800px;

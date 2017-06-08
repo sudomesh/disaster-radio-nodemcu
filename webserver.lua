@@ -113,6 +113,8 @@ srv:listen(80, function(conn)
           sendString503(conn, "Could not queue packet. Transmission queue is full.")
         end
 
+      elseif reqfile == "/chat" then
+
       elseif reqfile == "/console" then
 
         -- redirect lua interpreter output
