@@ -16,8 +16,16 @@ body {
     overflow-x: hidden;
 }
 
+#chat .remote {
+    color: #ffffff;
+}
+
 #chat .unsent {
-    color: #066600;
+    color: #303030;
+}
+
+#chat .status {
+    color: #ba0f00;
 }
 
 #chatInput {

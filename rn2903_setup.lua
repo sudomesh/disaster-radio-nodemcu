@@ -19,7 +19,7 @@ function loraSetup(cb)
 end
 
 function loraDisableMAC(cb)
-  loraCmdT("mac pause", function(maxPauseTime)
+  loraCmd("mac pause", function(maxPauseTime)
     if maxPauseTime == "0" then
       return cb("Could not pause MAC")
     end
@@ -29,7 +29,7 @@ end
 
 -- set LoRa modulation mode to LoRa
 function loraSetModulation(cb)
-  loraCmdT("radio set mod lora", function(resp)
+  loraCmd("radio set mod lora", function(resp)
     if resp ~= "ok" then
       return cb("Could not switch radio into LoRa modulation mode: "..resp)
     end
@@ -39,7 +39,7 @@ end
 
 -- set radio frequency
 function loraSetFrequency(cb)
-  loraCmdT("radio set freq 902000000", function(resp)
+  loraCmd("radio set freq 902000000", function(resp)
     if resp ~= "ok" then
       return cb("Could not set radio frequency: "..resp)
     end
@@ -50,7 +50,7 @@ end
 -- set power to 20 equates to setting 18.5 dBm output power
 function loraSetTXPower(cb)
   -- See page 7 http://ww1.microchip.com/downloads/en/DeviceDoc/50002390B.pdf
-  loraCmdT("radio set pwr 20", function(resp)
+  loraCmd("radio set pwr 20", function(resp)
     if resp ~= "ok" then
       return cb("Could not set radio output power: "..resp)
     end
@@ -61,7 +61,7 @@ end
 
 -- set largest spreading factor (slowest, longest range)
 function loraSetSpreadingFactor(cb)
-  loraCmdT("radio set sf sf12", function(resp)
+  loraCmd("radio set sf sf12", function(resp)
     if resp ~= "ok" then
       return cb("Could not set LoRa spreading factor: "..resp)
     end
@@ -72,7 +72,7 @@ end
 
 -- disable CRC header
 function loraSetCRC(cb)
-  loraCmdT("radio set crc off", function(resp)
+  loraCmd("radio set crc off", function(resp)
     if resp ~= "ok" then
       return cb("Could not disable radio CRC header: "..resp)
     end
@@ -84,7 +84,7 @@ end
 -- it is the ratio between actual data and error correction data
 -- the ratio is <bits-of-actual-data>/<total-bits-sent>
 function loraSetCodingRate(cb)
-  loraCmdT("radio set cr 4/8", function(resp)
+  loraCmd("radio set cr 4/8", function(resp)
     if resp ~= "ok" then
       return cb("Could not set radio coding rate: "..resp)
     end
@@ -94,7 +94,7 @@ end
 
 -- set the Sync word to 0x42
 function loraSetSyncWord(cb)
-  loraCmdT("radio set sync 42", function(resp)
+  loraCmd("radio set sync 42", function(resp)
     if resp ~= "ok" then
       return cb("Could not set sync word: "..resp)
     end
@@ -104,7 +104,7 @@ end
 
 -- set bandwidth to 500 kHz (maximum)
 function loraSetBandwidth(cb)
-  loraCmdT("radio set bw 500", function(resp)
+  loraCmd("radio set bw 500", function(resp)
     if resp ~= "ok" then
       return cb("Could not set radio bandwidth: "..resp)
     end
@@ -115,7 +115,7 @@ end
 -- TODO we probably actually want the watchdog
 -- but right now we're not dealing with it
 function loraDisableWatchdog(cb)
-  loraCmdT("radio set wdt 0", function(resp)
+  loraCmd("radio set wdt 0", function(resp)
     if resp ~= "ok" then
       return cb("Could not set radio bandwidth: "..resp)
     end

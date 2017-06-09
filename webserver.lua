@@ -99,7 +99,6 @@ srv:listen(80, function(conn)
         return
       end
 
-
       if reqfile == "/transmit" then
 
         if string.len(arg) > 512 then
@@ -113,7 +112,9 @@ srv:listen(80, function(conn)
           sendString503(conn, "Could not queue packet. Transmission queue is full.")
         end
 
-      elseif reqfile == "/chat" then
+      elseif reqfile == "/receive" then
+
+        sendString(conn, loraGetReceived())
 
       elseif reqfile == "/console" then
 

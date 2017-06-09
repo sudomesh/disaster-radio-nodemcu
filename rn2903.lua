@@ -11,7 +11,7 @@ function loraCmd(cmd, cb, expectLines)
     expectLines = 1
   end
 
-  lines = {}
+--  lines = {}
   lineCount = 1
 
   uart.write(0, cmd.."\r\n")
@@ -30,17 +30,18 @@ function loraCmd(cmd, cb, expectLines)
       if expectLines <= 1 then
         return cb(data)
       end
-      lines[lineCount] = data
+--      lines[lineCount] = data
 
       if lineCount == 1 and data ~= "ok" then
+        sdebug(data.." -- "..string.len(data))
         return cb(data)
       end      
-
-      lineCount = lineCount + 1
 
       if lineCount >= expectLines then
         return cb(data)
       end
+
+      lineCount = lineCount + 1 
     end
   end, 0)
 end
@@ -50,24 +51,29 @@ end
 function loraCmdT(cmd, cb, expectLines)
   local t = tmr.create()
   local timedOut = false
-  t:alarm(200, function()
+  t:alarm(500, tmr.ALARM_SINGLE, function()
     timedOut = true
-    cb("error: no response from lora chip")
+    cb("error: no response from RN2903 chip")
   end)
   loraCmd(cmd, function(data)
     if timedOut then
       return nil
     end
     t:unregister()
-    cb(data)
-  end), expectLines)
+    cb(nil, data)
+  end, expectLines)
 end
 
 
 -- check if we can talk to RN2903 LoRa device
 -- via serial
 function loraCheckConnection(cb)
-  loraCmdT("sys get ver", function(data)
+  loraCmdT("sys get ver", function(err, data)
+    if err then
+      sdebug("RN2903 got error: "..err)
+      cb(false)
+      return
+    end
     if string.sub(data, 1, 6) == "RN2903" then
       sdebug("RN2903 chip is connected")
       loraConnected = true
@@ -117,22 +123,27 @@ function loraInit()
   loraCheckConnection(function(success)
     if not success then
       local t = tmr.create()
-      t:alarm(200, function()
+      sdebug("check connection failed")
+      t:alarm(1000, tmr.ALARM_SINGLE, function()
+        sdebug("check connection retrying")
         loraInit() -- retry
       end)
       return
     end
 
+
     loraSetup(function(err)
       if err then
+        sdebug("setup failed")
         local t = tmr.create()
-        t:alarm(1000, function()
+        t:alarm(1000, tmr.ALARM_SINGLE, function()
+          sdebug("setup retrying")
           loraInit() -- retry
         end)
         return        
       end
 
-      loraTransceiveLoop()
+--      loraTransceiveLoop()
     end)
   end)
 
@@ -142,19 +153,22 @@ end
 -- TODO turn this into an actual queue
 loraTransmitQueue = nil
 
--- interval is specified in "receive windows size" not ms
+-- interval is specified in "receive window size" not ms
 -- see RN2903 protocol datasheet for "radio rx"
 function loraTransceiveLoop(interval)
   interval = interval or 500
 
   loraReceive(interval, function(err, data)
     if not err then
-      handleReceived(data)
+      loraHandleReceived(data)
     end
+
     -- if there is something to transmit, then transmit it
     if loraTransmitQueue then
+      sdebug("transmitting")
       loraTransmit(loraTransmitQueue, function(err)
         if not err then
+          sdebug("transmit succeeded")
           loraTransmitQueue = nil
         end
         loraTransceiveLoop(interval) 
@@ -173,6 +187,39 @@ function loraQueueTransmission(data)
   return true
 end
 
-function handleReceived(data)
-  -- TODO actually handle incoming data
+
+receiveBuffer = {}
+receiveBufferCount = 0
+
+function loraHandleReceived(data)
+
+  receiveBufferCount = receiveBufferCount + 1
+  receiveBuffer[receiveBufferCount] = data  
+
 end
+
+
+function loraGetReceived()
+
+  if receiveBufferCount == 0 then
+    return '[]'  
+  end
+
+  local data = '['
+
+  for i=1,receiveBufferCount do
+    if receiveBuffer[i] then
+      data = data..'"'..receiveBuffer[i]..'"'
+      if i < receiveBufferCount then
+        data = data..','
+      end
+    end
+  end
+  data = data..']'
+
+  receiveBuffer = {}  
+  receiveBufferCount = 1
+
+  return data
+end
+

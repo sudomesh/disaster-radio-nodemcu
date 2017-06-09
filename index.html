@@ -11,9 +11,8 @@
 
     <form id="chatForm" action="/chat" method="POST">
       <div id="chat">
-        <span>&lt;juul&gt; Testing</span>
       </div>
-      <input id="chatInput" type="text" name="msg" />
+      <input id="chatInput" type="text" name="msg" placeholder="Enter you name or alias" />
       <script>
         var c = document.getElementById('chatInput')
         c.focus();
@@ -21,6 +20,10 @@
         c = null;
       </script>
     </form>
+
+    <p>
+      <input id="receiveButton" type="button" value="receive" />
+    </p>
 
   </body>
 </html>
