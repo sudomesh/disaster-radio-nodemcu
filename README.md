@@ -65,13 +65,6 @@ Connect a NodeMCU device to USB (or serial) and run:
 `serial_device` defaults to /dev/ttyUSB0
 `baud` defaults to 115200
 
-# Debugging
-
-All `print()` calls in the .lua scripts will send their output to the serial console, which also functions as a lua command line. Use e.g. minicom to connect:
-
-```
-minicom -o -D /dev/ttyUSB0
-```
 
 # DHCP DNS option
 
@@ -100,9 +93,9 @@ nc 100.127.0.1 23
 
 You could also use telnet, but telnet sends a bunch of junk when it connects that the server doesn't know how to filter out yet, so you need to hit enter once immediately after connecting to discard the junk (you'll get a lua error when you do, but that's fine).
 
-Web via http://100.127.0.1/serial but currently the web terminal is rather heavy (150kB) and it takes a suprisingly long time for the ESP8266 to send the js file (maybe 15 seconds).
+Right now the ESP8266 serial acts as a debug console, but as soon as a network console connection is opened the serial console is disabled and the connection to the RN2903 is activated.
 
-Both of these are not the same as the serial terminal. Notably they currently lack multiline input support ([see this issue](https://github.com/sudomesh/disaster-radio-nodemcu/issues/1)).
+The network console is not the same as the serial terminal. Notably it currently lack multiline input support ([see this issue](https://github.com/sudomesh/disaster-radio-nodemcu/issues/1)).
 
 # RN2903 serial
 
@@ -119,13 +112,12 @@ When connecting via network terminal the serial port will be automatically switc
 
 # ToDo
 
-* Make loraCmd time out and call the callback with nil
+* Automatic RN2903 init startup (delayed) 
+* RN2903 status via web (and loraGetStatus() via network console)
+* Fix memory leak in webserver that causes OOM after ~20-40 GET requests
 * Enabling the DNS server makes uart.write flaky (only some characters sent)
 * Switch to more minimal web terminal (maybe just a styled textarea)
-* Fix web console whitespace issues
 * Catch XML parsing error on XMLHTTPRequest (firefox)
-* Security for dev console?
-* DNS server seems slow to respond to first request?
 * Make DNS server only respond to requests for a specified hostname
 * Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
 
@@ -146,6 +138,12 @@ loraInit()
 ```
 
 If the RN2903 is responding you will see the message "RN2903 chip is connected". If it is not responding then currently you will get no output.
+
+Then to start the transceive loop which handles receive and transmit, run:
+
+```
+loraTransceiveLoop()
+111
 
 # License and copyright
 
