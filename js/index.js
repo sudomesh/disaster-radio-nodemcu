@@ -1,9 +1,65 @@
 
-// TODO this adds 58 kB to bundle.js
-// need to find a smaller alternative
-var entities = new (require('html-entities').AllHtmlEntities);
 
-var myName;
+// hmm, this module is 11 kB... i feel like that's a lot for what it does
+// but other similar modules like ent, entities and html-entities are a lot bigger
+var entityEncode = require('stringify-entities');
+var Grapnel = require('grapnel');
+
+$ = function(q) {
+  return document.querySelectorAll(q);
+}
+
+function notFound() {
+  return '<h3>404 not found</h3>';
+}
+
+
+function initRouting() {
+  
+  var router = new Grapnel({pushState: true});
+  
+  function appsRoute(req) {
+    tabTo('apps');
+  };
+    
+  router.get('', appsRoute);
+  router.get('/', appsRoute);
+  router.get('/apps', appsRoute);
+  
+  router.get('/chat', function(req) {
+    tabTo('chat');
+  });
+  
+  router.get('/console', function(req) {
+    tabTo('console');
+  });
+
+  router.get('/status', function(req) {
+    tabTo('status');
+  });
+  
+  router.get('/about', function(req) {
+    tabTo('about');
+  });
+
+  document.addEventListener('click', function(e) {
+    if(e.target.tagName === 'A' && e.target.href && e.target.href !== '#') {
+      e.preventDefault();
+      router.navigate(e.target.href);
+    }
+  });
+}
+
+function tabTo(tabID) {
+  var tabs = $('.tab');
+  tabs.forEach(function(tab) {
+    // on mouse enter
+    tab.classList.remove('active-tab');
+  });
+
+  $('#'+tabID)[0].classList.add('active-tab');
+}
+
 
 function error(msg) {
   // TODO show this to the user
@@ -113,12 +169,18 @@ function appendLine(txt, classes) {
 
   var span = document.createElement('DIV');
 
-  span.innerHTML = entities.encode(txt);
+  span.innerHTML = entityEncode(txt);
   span.className = classes || 'unsent';
   view.appendChild(span);
 
   return span;
 }
+
+
+
+
+
+var myName;
 
 function initChat() {
   var form = document.getElementById('chatForm');
@@ -250,8 +312,76 @@ function initDevConsole() {
 }
 
 
+function initMenu() {
+
+  // menu show/hide on click
+  $('#menu .icon')[0].addEventListener('click', function(e) {
+    e.stopPropagation();
+
+    if(getComputedStyle($('#menu ul')[0])['display'] === 'none') {
+      $('#menu ul')[0].style.display = 'block';
+    } else {
+      $('#menu ul')[0].style.display = 'none';
+    }
+  });
+  $('#menu')[0].addEventListener('mousedown', function(e) {
+    e.stopPropagation();    
+  });
+
+  function unHighlight() {
+    // menu mouse-over highlighting
+    var els = $('#menu ul li');
+    els.forEach(function(el) {
+      // on mouse enter
+      el.classList.remove('highlight');
+    });
+  }  
+
+  function setCurrent(el) {
+    // menu mouse-over highlighting
+    var els = $('#menu ul li');
+    els.forEach(function(cur) {
+      if(cur === el) return;
+      // on mouse enter
+      cur.classList.remove('current');
+    });
+    el.classList.add('current');
+  }
+
+  // menu mouse-over highlighting
+  var els = $('#menu ul li');
+  els.forEach(function(el) {
+    el.addEventListener('mouseover', function(e) {
+      unHighlight();
+      el.classList.add('highlight');
+    });
+
+    el.addEventListener('mouseout', function(e) {
+      unHighlight();
+      $('#menu ul li.current')[0].classList.add('highlight');
+    });
+
+    el.addEventListener('click', function(e) {
+      setCurrent(el);
+      $('#menu ul')[0].style.display = 'none';
+    });
+  });
+
+  // menu disappears when clicking elsewhere
+  document.body.addEventListener('mousedown', function(e) {
+    $('#menu ul')[0].style.display = 'none';
+  });
+
+
+}
+
 
 function pageInit() {
+
+
+  initMenu();
+
+  initRouting();
 
   initChat();
 

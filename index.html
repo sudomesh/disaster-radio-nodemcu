@@ -7,23 +7,60 @@
     <script src="bundle.js"></script>
   </head>
   <body>
-    <h1>DisasterRadio</h1>
 
-    <form id="chatForm" action="/chat" method="POST">
-      <div id="chat">
-      </div>
-      <input id="chatInput" type="text" name="msg" placeholder="Enter you name or alias" />
-      <script>
-        var c = document.getElementById('chatInput')
-        c.focus();
-        c.value = ''
-        c = null;
-      </script>
-    </form>
+    <header id="menu" class="noselect">
+      <div class="icon">&#9776;</div>
+      <nav>
+        <ul>
+          <div class="top-line">&nbsp;</div>
+          <li class="current highlight"><a href="/" class="first">Apps</a></li>
+          <li><a href="/chat" class="first">Chat</a></li>
+          <li><a href="/console">Console</a></li>
+          <li><a href="/about" class="last">About</a></li>
+        </ul>
+      </nav>
+    </header>
 
-    <p>
-      <input id="receiveButton" type="button" value="receive" />
-    </p>
+    <div id="apps" class="tab active-tab">
+      <h1>Disaster Radio</h1>
+      
+      <h3>Available apps:</h3>
+      <ul>
+        <li><a href="/chat">Chat</a></li>
+      </ul>
+    </div>
+
+    <div id="chat" class="tab">
+      <h1>DisasterRadio</h1>
+      
+      <form id="chatForm" action="/chat" method="POST">
+        <div id="chat">
+        </div>
+        <input id="chatInput" type="text" name="msg" placeholder="Enter you name or alias" />
+        <script>
+          var c = document.getElementById('chatInput')
+          c.focus();
+          c.value = ''
+          c = null;
+        </script>
+      </form>
+      
+      <p>
+        <input id="receiveButton" type="button" value="receive" />
+      </p>
+    </div>
+
+    <div id="console" class="tab">
+      <h3>ToDo console</h3>
+    </div>
+
+    <div id="status" class="tab">
+      <h3>ToDo RN2903 status</h3>
+    </div>
+
+    <div id="about" class="tab">
+      <h3>ToDo About page</h3>
+    </div>
 
   </body>
 </html>

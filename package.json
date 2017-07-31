@@ -4,7 +4,8 @@
   "description": "Attempt at using an ESP8266 as a Disaster Radio wifi gateway",
   "homepage": "http://github.com/sudomesh/disaster-radio-nodemcu",
   "scripts": {
-    "build": "browserify -e js/index.js -m -o bundle.js"
+    "build": "browserify -e js/index.js -m -o bundle.js",
+    "watch": "watchify -e js/index.js -m -o bundle.js"
   },
   "repository": {
     "type": "git",
@@ -20,11 +21,11 @@
     "wifi"
   ],
   "dependencies": {
-    "html-entities": "^1.2.1"
+    "grapnel": "^0.6.4",
+    "stringify-entities": "^1.3.1"
   },
   "devDependencies": {
-    "browserify": "^14.1.0",
-    "xterm": "^2.5.0"
+    "browserify": "^14.1.0"
   },
   "author": {
     "name": "Marc Juul",

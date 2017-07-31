@@ -1,10 +1,18 @@
 
 body {
-  font-family: sans-serif;
+    font-family: sans-serif;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
 #chat {
-    display: block;
     width: 630px;
     height: 470px;
     background-color: black;
@@ -45,3 +53,109 @@ body {
     width: 800px;
     height: 450px;
 }
+
+
+/* tabs */
+
+.tab {
+    display: none;
+}
+
+.active-tab {
+    display: block;
+}
+
+/* END tabs */
+
+
+/* BEGIN menu */
+
+#menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background-color: #0a742a;
+    z-index: 10000;
+    border-left: 3px solid white;
+    border-bottom: 3px solid white;
+    cursor: pointer;
+  text-align: center;
+}
+
+#menu .icon {
+  font-family: serif;
+}
+
+#menu nav {
+  width: 100%;
+  text-align: left;
+}
+
+
+#menu ul {
+    display: none;
+    position: relative;
+    margin-top: 10px;
+    padding-top: 0;
+    width: 200px;
+    left: -140px;
+    font-family: sans-serif;
+    background-color: #0a742a;
+    border-left: 3px solid white;
+    border-bottom: 3px solid white;
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 18px;
+    padding-bottom: ;
+}
+
+#menu ul li {
+}
+
+
+#menu ul li.highlight {
+    background-color: #2a944a;
+}
+
+#menu ul .top-line {
+    width: 137px;
+    height: 2px;
+    background-color: white;
+
+}
+
+#menu a {
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: block;
+}
+
+#menu ul li a.first {
+    padding-top: 10px;
+}
+
+#menu ul li a.last {
+    padding-bottom: 10px;
+}
+
+#menu .icon {
+    color: white;
+    line-height: 70%;
+}
+
+
+
+#menu a:link, a:active, #menu a:visited {
+    text-decoration: none;
+    color: white;
+}
+
+#menu .icon {
+    font-size: 70px;
+    
+}
+
+/* END menu */
