@@ -144,6 +144,7 @@ When connecting via network terminal the serial port will be automatically switc
 
 ## Misc
 
+* Make webserver send index.html for all unknown routes (handle 404 client side)
 * Give lora transmit queue more than one slot
 * Catch XML parsing error on XMLHTTPRequest (firefox)
 * Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
