@@ -143,7 +143,33 @@ Then to start the transceive loop which handles receive and transmit, run:
 
 ```
 loraTransceiveLoop()
-111
+```
+
+# Fixing annoying /dev/ttyUSB0 names
+
+When you plug in an ESP8266 USB module or USB serial adapter the first will generally show up as `/dev/ttyUSB0` and the next as `/dev/ttyUSB1` etc. but this will depend on the order you use to plug them in. When you are repeatedly restarting and replugging multiple devices during development this can get tedious.
+
+You can use `scripts/usb_alias` to generate udev rules to give these devices more sane names when plugged in.
+
+Since most of these devices don't have a USB serial number the only way to differentiate them is through the bus that they are attached to. Many laptops have multiple USB buses. You might find that attaching to the left side of your laptop and running `lsusb` will show that the device is on e.g. bus 1 and then plugging it on the right hand side will show it connected to bus 2.
+
+Plug in a ESP8266 or serial adapter to the left USB port and use `lsusb` to determine the name. My device shows up as "QinHeng Electronics HL-340 USB-Serial adapter". Try plugging into different usb ports and verify that the bus changes between the right and left side usb ports. Now run:
+
+```
+./scripts/usb_alias qinheng disaster/left
+```
+
+add the resulting udev line to a new file `/etc/udev/rules.d/disaster.conf` and restart udev with e.g. `/etc/init.d/udev restart`.
+
+Now when such a device is plugged into the left USB port it will appear as `/dev/disaster/left`.
+
+Plug it into a right hand side USB port and do:
+
+```
+./scripts/usb_alias qinheng disaster/right
+```
+
+and again restart udev. Now you will be able to work with two devices without becoming confused about which `/dev` devices is which.
 
 # License and copyright
 

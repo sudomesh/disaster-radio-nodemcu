@@ -1,0 +1,85 @@
+#!/bin/bash
+
+OPTIND=1
+
+usage() {
+  echo "Creates udev rule for a usb-device-specific symlink in /dev"
+  echo ""
+  echo "Usage: $0 lsusb_query symlink"
+  echo ""
+  echo "Options
+  echo ""
+  echo "  -b: Include USB bus in udev rule"
+  echo ""
+  echo "  e.g: '$0 broadcom foo/mydevice' 
+  echo "  will find the usb device matching the string 'broadcom'"
+  echo "  and create a udev rule that makes the device accessible"
+  echo "  via /dev/foo/mydevice every time it is connected"
+  echo ""
+}
+
+bus=false
+
+while getopts "hb" opt; do
+  case "$opt" in
+  h)
+    usage
+    exit 0
+    ;;
+  b)
+    matchBus=true
+    ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+if [ "$#" -ne "2" ]; then
+  echo "Error: Invalid number of arguments" > /dev/stderr
+  usage
+  exit 1
+fi
+
+symlink=$2
+out=$(lsusb | grep -i $1)
+
+count=$(echo "$out" | wc -l)
+
+if [ "$count" -gt "1" ]; then
+  echo "" > /dev/stderr
+  echo "Multiple matching devices found:" > /dev/stderr
+  echo "" > /dev/stderr
+  echo "$out" > /dev/stderr
+  echo "" > /dev/stderr
+  exit 1
+elif [ "$count" -lt "1" ]; then
+  echo "" > /dev/stderr
+  echo "No matching device found" > /dev/stderr
+  echo "" > /dev/stderr
+  echo "Use `lsusb` to show devices" > /dev/stderr
+  echo "" > /dev/stderr
+  exit 1
+fi
+
+parts=($out)
+bus=${parts[1]}
+bus=$(echo $bus | sed -e 's/^0\+//g') # strip leading zeroes
+vendorProduct=${parts[5]}
+vendor=$(echo $vendorProduct | cut -d':' -f 1)
+product=$(echo $vendorProduct | cut -d':' -f 2)
+
+udevLine="ATTRS{idVendor}==\"${vendor}\", ATTRS{idProduct}==\"${product}\", SYMLINK+=\"${symlink}\""
+
+if [ $matchBus = true ]; then
+   udevLine="ATTRS{busnum}==\"${bus}\", $udevLine"
+fi
+
+echo ""
+echo "Place the following in e.g. /etc/udev/rules.d/${symlink}.conf"
+echo ""
+echo $udevLine
+echo ""
+echo "Then restart udev:"
+echo ""
+echo "  sudo /etc/init.d/udev restart"
+echo ""
