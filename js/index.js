@@ -28,14 +28,16 @@ function initRouting() {
   
   router.get('/chat', function(req) {
     tabTo('chat');
+    document.getElementById('chatInput').focus();
   });
   
   router.get('/console', function(req) {
     tabTo('console');
+    document.getElementById('consoleInput').focus();
   });
 
   router.get('/status', function(req) {
-    tabTo('status');
+    tabTo('about');
   });
   
   router.get('/about', function(req) {
@@ -164,7 +166,7 @@ function sendMessage(msg, cb) {
   req.send(toSend);
 }
 
-function appendLine(txt, classes) {
+function appendLine(txt) {
   var view = document.getElementById('chat');
 
   var span = document.createElement('DIV');
@@ -218,97 +220,57 @@ function initChat() {
 
 
 
+var commandInProgress = false;
+
+function runCommand(cmd, cb) {
+
+  var xhr = new XMLHttpRequest();
+  
+  if(commandInProgress) return cb(new Error("Command already in progress"));
+
+  commandInProgress = true;
+
+  xhr.open('POST', '/console');
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+  xhr.onload = function() {
+    commandInProgress = false;
+    if(xhr.status !== 200) {
+      return cb(new Error("POST failed: " + xhr.status));
+    }
+    console.log("GOT:", xhr.responseText);
+
+    cb(null, xhr.responseText);
+  };
+};
 
 function initDevConsole() {
-  try {
 
-    var te = document.getElementById('terminal-container');
+  function devAppendLine(parent, txt) {
+   
+    var div = document.createElement('DIV');
+    div.innerHTML = entityEncode(txt);
+    parent.appendChild(div);
 
-    if(te) {
-
-//      var Terminal = require('xterm');
-      if(Terminal) console.log("LOADED TERM");
-
-      var term = new Terminal();
-
-      term.open(te);
-
-      var promptLine = '';
-
-      term.prompt = function () {
-        term.write('\r\n' + promptLine);
-      };
-
-      
-      var commandInProgress = false;
-
-      function runCommand(cmd, cb) {
-
-        var xhr = new XMLHttpRequest();
-        
-        xhr.open('POST', '/console');
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onload = function() {
-          var commandInProgress = false;
-          if(xhr.status !== 200) {
-            return cb("POST failed: " + xhr.status);
-          }
-          console.log("GOT:", xhr.responseText);
-          cb(null, xhr.responseText);
-        };
-
-// TODO
-// we should URI encode but the nodemcu webserver doesn't care
-// and can't uridecode anyway
-//        var toSend = encodeURI('arg=' + cmd)
-        var toSend = 'arg=' + cmd;
-        console.log("SENDING:", toSend)
-        xhr.send(toSend);
-      }
-
-      var cmd = '';
-
-      term.on('key', function(key, ev) {
-        // TODO this is a terrible test for whether something is printable
-        var printable = (
-          !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
-        );
-        
-        if(ev.keyCode == 13) {
-          if(commandInProgress) return;
-          if(!cmd.length) cmd = "\n";
-          var commandInProgress = true;
-          runCommand(cmd, function(err, res) {
-            var commandInProgress = false;
-            if(err) return console.error(err);
-            
-            term.write(res);
-          });
-
-          cmd = '';
-          term.prompt();
-
-        } else if(ev.keyCode == 8) {
-          // Do not delete the prompt
-          if(term.x > promptLine.length) {
-            term.write('\b \b');
-            cmd = cmd.slice(0, -1);
-          }
-        } else if(printable) {
-          cmd += key;
-          term.write(key);
-        }
-      });
-
-      term.prompt();
-    }
-
-  } catch(e) {
-    // ignore error 
-    // since xterm is only installed
-    // as a developer dependency
+    return div;
   }
 
+  document.getElementById('consoleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var cmd = document.getElementById('consoleInput').value;
+    runCommand(cmd, function(err, res) {
+      if(err) return console.error(err);
+
+      var parent = document.getElementById('consoleOutput');
+
+      var lines = res.trim().split(/\r\n/);
+      for(i=0; i < lines.length; i++) {
+        devAppendLine(parent, lines);
+      }
+
+    });
+  });
 }
 
 

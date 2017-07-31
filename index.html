@@ -37,12 +37,6 @@
         <div id="chat">
         </div>
         <input id="chatInput" type="text" name="msg" placeholder="Enter you name or alias" />
-        <script>
-          var c = document.getElementById('chatInput')
-          c.focus();
-          c.value = ''
-          c = null;
-        </script>
       </form>
       
       <p>
@@ -51,7 +45,13 @@
     </div>
 
     <div id="console" class="tab">
-      <h3>ToDo console</h3>
+      <h3>Console</h3>
+
+      <div id="consoleOutput"></div>
+
+      <form id="consoleForm" action="/console" method="POST">
+        <input id="consoleInput" type="text" name="msg" />
+      </form>
     </div>
 
     <div id="status" class="tab">

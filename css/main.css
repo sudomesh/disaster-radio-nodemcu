@@ -47,15 +47,7 @@ body {
     border: 0;
 }
 
-
-
-#terminal-container {
-    width: 800px;
-    height: 450px;
-}
-
-
-/* tabs */
+/* BEGIN tabs */
 
 .tab {
     display: none;
@@ -159,3 +151,32 @@ body {
 }
 
 /* END menu */
+
+
+/* BEGIN console */
+
+#consoleOutput {
+    width: 630px;
+    height: 470px;
+    background-color: black;
+    color: #0fba00;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#consoleInput {
+    width: 618px;
+    padding: 5px;
+    display: block;
+    color: #0fba00;
+    font-family: monospace;
+    font-size: 14px;
+    background-color: black;
+    border: 0;
+    border-top: 1px solid gray;
+}
+
+/* END console */

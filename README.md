@@ -115,13 +115,37 @@ When connecting via network terminal the serial port will be automatically switc
 
 # ToDo
 
-* Automatic RN2903 init startup (delayed) 
-* RN2903 status via web (and loraGetStatus() via network console)
+## Automatic RN2903 init startup
+
+* Run switchSerial as soon as first web or telnet client connects
+* Init RN2903 after switchSerial
+
+## Web dev console
+
+* Switch server to calling `run(cmd)` from interpret.lua
+* Test client
+
+## Fix memory leak
+
 * Fix memory leak in webserver that causes OOM after ~20-40 GET requests
+* Get automatic web client chat receive loop working
+
+## Get retransmission working
+
+* Hash received message
+* If message not retransmitted before (not in hash list)
+* Add to hash list (limited size circular buffer)
+* Retransmit after randomized delay
+
+## DNS issues
+
 * Enabling the DNS server makes uart.write flaky (only some characters sent)
-* Switch to more minimal web terminal (maybe just a styled textarea)
-* Catch XML parsing error on XMLHTTPRequest (firefox)
 * Make DNS server only respond to requests for a specified hostname
+
+## Misc
+
+* Give lora transmit queue more than one slot
+* Catch XML parsing error on XMLHTTPRequest (firefox)
 * Figure out how to set TxPower to 19.5 dBm (apparently NodeMCU per default maxes out at 17 dBm)
 
 # Directly talking to the RN2903
