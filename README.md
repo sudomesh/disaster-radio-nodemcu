@@ -156,7 +156,7 @@ Since most of these devices don't have a USB serial number the only way to diffe
 Plug in a ESP8266 or serial adapter to the left USB port and use `lsusb` to determine the name. My device shows up as "QinHeng Electronics HL-340 USB-Serial adapter". Try plugging into different usb ports and verify that the bus changes between the right and left side usb ports. Now run:
 
 ```
-./scripts/usb_alias qinheng disaster/left
+./scripts/usb_alias -b qinheng disaster/left
 ```
 
 add the resulting udev line to a new file `/etc/udev/rules.d/disaster.conf` and restart udev with e.g. `/etc/init.d/udev restart`.
@@ -166,7 +166,7 @@ Now when such a device is plugged into the left USB port it will appear as `/dev
 Plug it into a right hand side USB port and do:
 
 ```
-./scripts/usb_alias qinheng disaster/right
+./scripts/usb_alias -b qinheng disaster/right
 ```
 
 and again restart udev. Now you will be able to work with two devices without becoming confused about which `/dev` devices is which.
