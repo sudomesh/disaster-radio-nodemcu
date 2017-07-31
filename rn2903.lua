@@ -1,4 +1,7 @@
 
+gpio.mode(1, gpio.OUTPUT)
+gpio.write(1, gpio.LOW)
+
 loraConnected = false
 
 -- If expectLines is set and is higher than 1
@@ -120,6 +123,8 @@ end
 
 
 function loraInit()
+  gpio.write(1, gpio.HIGH)
+
   loraCheckConnection(function(success)
     if not success then
       local t = tmr.create()

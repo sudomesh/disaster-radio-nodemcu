@@ -97,15 +97,18 @@ Right now the ESP8266 serial acts as a debug console, but as soon as a network c
 
 The network console is not the same as the serial terminal. Notably it currently lack multiline input support ([see this issue](https://github.com/sudomesh/disaster-radio-nodemcu/issues/1)).
 
-# RN2903 serial
+# RN2903 connection
 
 Since we're already using the one and only ESP8266 serial port for the lua developer console, we need to disable the lua console and connect the serial port to the RN2903 instead. Luckily the ESP8266 supports switching the serial TX/RX to use alternate pins after bootup.
 
-These are the alternate serial pins that are connected to the RN2903:
+Connect the following pins like so from ESP8266 to RN2903:
 
 ```
-GPIO13: D7
-GPIO15: D8
+ESP8266 - Weemos D1 mini  -   RN2903
+----------------
+GPIO05  -       D1      -->    RST
+GPIO13  -       D7      -->    TX
+GPIO15  -       D8      -->    RX
 ```
 
 When connecting via network terminal the serial port will be automatically switch to the alternate pins and the lua debug console will be disabled.
