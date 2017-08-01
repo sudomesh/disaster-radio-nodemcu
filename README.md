@@ -83,15 +83,11 @@ Conclusion: When an ESP32 with u.fl plug becomes available _and_ NodeMCU is read
 
 # debugging
 
-The ESP8266 only has one serial port and we're using it to talk to the RN2903. Currently there are two ways to get a lua console:
-
-Direct TCP socket on port 23:
+The ESP8266 only has one serial port and we're using it to talk to the RN2903. We have lua consoles via telnet and via the web but the web console is currently being re-implemented so is not in a working state. To use the telnet console:
 
 ```
-nc 100.127.0.1 23
+telnet 100.127.0.1
 ```
-
-You could also use telnet, but telnet sends a bunch of junk when it connects that the server doesn't know how to filter out yet, so you need to hit enter once immediately after connecting to discard the junk (you'll get a lua error when you do, but that's fine).
 
 Right now the ESP8266 serial acts as a debug console, but as soon as a network console connection is opened the serial console is disabled and the connection to the RN2903 is activated.
 
@@ -99,7 +95,7 @@ The network console is not the same as the serial terminal. Notably it currently
 
 # RN2903 connection
 
-Since we're already using the one and only ESP8266 serial port for the lua developer console, we need to disable the lua console and connect the serial port to the RN2903 instead. Luckily the ESP8266 supports switching the serial TX/RX to use alternate pins after bootup.
+The ESP8266 supports switching the serial TX/RX to use alternate pins after bootup and this happens automatically as soon as a telnet console is opened. The alternate pins are GPIO 13 and GPIO 15, also called pins 7 and 8 in nodemcu or pins D7 and D8 on the Weemos D1 mini board. We additionally use GPIO 5 (pin 1 / D1) to reset the RN2903 after bootup.
 
 Connect the following pins like so from ESP8266 to RN2903:
 
@@ -111,13 +107,13 @@ GPIO13  -       D7      -->    TX
 GPIO15  -       D8      -->    RX
 ```
 
-When connecting via network terminal the serial port will be automatically switch to the alternate pins and the lua debug console will be disabled.
+When connecting via telnet terminal the serial port will be automatically switch to the alternate pins and the lua debug console will be disabled.
 
 # ToDo
 
 ## Automatic RN2903 init startup
 
-* Run switchSerial as soon as first web or telnet client connects
+* Run switchSerial as soon as web node is started via web client (and after telnet connection, as is currently the case).
 * Init RN2903 after switchSerial
 
 ## Web dev console
@@ -205,7 +201,7 @@ License and copyright information for files in the `firmware/` directory can be 
 
 For all other files in this repository:
 
-License: GPLv2 (hoping to switch to GPLv3 in the future).
+License: GPLv3
 
 Copyright 2017 Marc Juul
 
