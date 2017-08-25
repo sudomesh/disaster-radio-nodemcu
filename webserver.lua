@@ -1,5 +1,5 @@
 
-function sendFile(conn, filename)
+function sendFile(sck, filename)
   local f
   local buf
   local head = "HTTP/1.1 200 OK\r\n"
@@ -15,33 +15,44 @@ function sendFile(conn, filename)
     head = "HTTP/1.1 404 Not Found\r\n"
   end
 
---  head = head.."Content-Type: text/html\r\n\r\n"
-  head = head.."\r\n\r\n"
-
-  local function sender()
-
+  local function send(c)
     buf = f:read(1024)
     if buf then
-      conn:send(buf)
+      c:send(buf)
     else
-      conn:close()
+      c:close()
       f:close()
     end
-  end
+    buf = nil
 
-  conn:on("sent", sender)
-  conn:send(head)
+  end
+  
+  sck:on("sent", send)
+
+  send(sck)
 
 end
 
 
-function sendString(conn, str, status)
+function sendString(sck, str, status)
   status = status or "200 OK"
-  str = "HTTP/1.1 "..status.."\r\nContent-Type: text/plain\r\n\r\n"..str
 
-  conn:send(str, function(sent)
-    conn:close()
-  end)
+  local response = {}
+  response[#response + 1] = "HTTP/1.1 "..status.."\r\nContent-Type: text/plain\r\n\r\n"..str
+
+  local function send(c)
+    if #response > 0 then
+      c:send(table.remove(response, 1))
+    else
+      collectgarbage()
+      response = nil
+      c:close()
+    end
+  end
+
+  sck:on("sent", send)
+  send(sck)
+
 end
 
 function sendString400(conn, str)
@@ -49,7 +60,7 @@ function sendString400(conn, str)
 end
 
 function sendString503(conn, str)
-  sendString(conn, str, "503 Service Temporarily Unavailable")
+  sendString(conn, str, "502 Service Temporarily Unavailable")
 end
 
 srv=net.createServer(net.TCP)
