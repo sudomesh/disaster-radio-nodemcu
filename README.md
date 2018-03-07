@@ -1,4 +1,6 @@
 
+THIS HAS BEEN REPLACED WITH ARDUINO-BASED FIRMWARE see https://github.com/sudomesh/disaster-radio
+
 Experimenting with ESP8266 and node-mcu for lower power usage than a full Omega2 system.
 
 # Requirements
